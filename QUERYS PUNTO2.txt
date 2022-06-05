@@ -1,0 +1,28 @@
+select * from(
+SELECT sku as 'Codigo Producto',
+ nombre_item, sum(cantidad) as 'Sumatoria Total Cantidades',
+ sum(precio_unitario*cantidad) as 'Sumantoria Valor Venta',
+ sum(costo_unitario*cantidad) as 'Sumatoria Total Costo' 
+FROM `facturacion-detalle`.facturacion_detalle
+group by sku) as productos
+order by 3 desc
+
+
+
+SELECT * FROM(
+SELECT f.fecha_realizacion as 'fecha venta',
+ t.fecha_registro as 'fecha registro cliente',
+ t.documento as 'Doc Cliente',
+ concat_ws(' ', t.nombre, t.apellido) as 'nombre cliente',
+ concat_ws('-', f.fact_prefijo, f.fact_consecutivo) as 'Consecutivos de venta',
+ sum(fd.cantidad * fd.precio_unitario) as 'Total venta',
+ sum(fd.cantidad) as 'Total Cantidad',
+ sum(fd.iva) as 'Total Iva'
+ FROM `facturacion-detalle`.facturacion f,
+`facturacion-detalle`.tercero t, `facturacion-detalle`.facturacion_detalle fd
+where f.id_tercero = t.id_tercero and f.id_factura = fd.id_factura
+group by fd.id_factura) as clientes
+ORDER BY 2 asc, 1 desc
+
+
+
